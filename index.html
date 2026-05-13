@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Writing Savings Calculator</title>
+
+  <style>
+    :root {
+      --axon-yellow: #ffcc00;
+      --axon-yellow-soft: #ffe066;
+      --black: #050505;
+      --black-2: #111111;
+      --gray: #a3a3a3;
+      --white: #ffffff;
+      --border: rgba(255, 204, 0, 0.32);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 204, 0, 0.14), transparent 35%),
+        linear-gradient(135deg, #000000 0%, #101010 50%, #000000 100%);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 32px 18px 60px;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, rgba(255, 204, 0, 0.12), rgba(0, 0, 0, 0.92));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      right: -120px;
+      top: -140px;
+      background: rgba(255, 204, 0, 0.13);
+      border-radius: 50%;
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-wrap {
+      width: 150px;
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      border: 1px solid rgba(255, 204, 0, 0.28);
+      border-radius: 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-wrap img {
+      max-width: 132px;
+      max-height: 68px;
+      object-fit: contain;
+    }
+
+    .logo-fallback {
+      display: none;
+      color: var(--axon-yellow);
+      font-size: 30px;
+      letter-spacing: 8px;
+      font-weight: 300;
+    }
+
+    .eyebrow {
+      color: var(--axon-yellow);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 0.98;
+      margin: 0 0 14px;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 840px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: #d7d7d7;
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .panel {
+      background: rgba(9, 9, 9, 0.92);
+      border: 1px solid rgba(255, 204, 0, 0.22);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    label {
+      display: block;
+      color: #e9e9e9;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      background: #050505;
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      padding: 13px 14px;
+      outline: none;
+      font-size: 16px;
+      transition: 0.16s ease;
+    }
+
+    input:focus {
+      border-color: var(--axon-yellow);
+      box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.12);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 6px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .term-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #050505;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 16px;
+      padding: 5px;
+      gap: 5px;
+    }
+
+    .term-toggle button {
+      border: 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: transparent;
+      color: #cfcfcf;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .term-toggle button.active {
+      background: var(--axon-yellow);
+      color: #000;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn-primary {
+      background: var(--axon-yellow);
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: #202020;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .big-card {
+      background:
+        linear-gradient(160deg, rgba(255, 204, 0, 0.16), rgba(0,0,0,0.6)),
+        #0b0b0b;
+      border: 1px solid rgba(255, 204, 0, 0.36);
+      border-radius: 22px;
+      padding: 20px;
+      min-height: 164px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .big-card::after {
+      content: "";
+      position: absolute;
+      right: -45px;
+      bottom: -55px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(255, 204, 0, 0.12);
+    }
+
+    .card-label {
+      color: var(--axon-yellow-soft);
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .money {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      margin-bottom: 8px;
+    }
+
+    .hours {
+      color: #e7e7e7;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .section-title {
+      margin: 22px 0 12px;
+      font-size: 20px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      background: #0d0d0d;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .metric .name {
+      color: #bcbcbc;
+      font-size: 12px;
+      line-height: 1.35;
+      margin-bottom: 9px;
+    }
+
+    .metric .value {
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .comparison {
+      background: linear-gradient(160deg, #111, #050505);
+      border: 1px solid rgba(255, 204, 0, 0.24);
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .comparison .emoji {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .comparison .value {
+      color: var(--axon-yellow);
+      font-size: 30px;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+      margin-bottom: 6px;
+    }
+
+    .comparison .copy {
+      color: #d5d5d5;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .synopsis {
+      background: rgba(255, 204, 0, 0.1);
+      border: 1px solid rgba(255, 204, 0, 0.28);
+      border-radius: 20px;
+      padding: 18px;
+      color: #eeeeee;
+      line-height: 1.55;
+      margin-top: 14px;
+    }
+
+    .synopsis strong {
+      color: var(--axon-yellow);
+    }
+
+    .footer-note {
+      color: #929292;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid,
+      .metric-grid,
+      .comparison-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        padding: 22px;
+      }
+
+      .logo-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .summary-grid,
+      .metric-grid,
+      .comparison-grid,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .money {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="logo-row">
+        <div class="logo-wrap">
+          <img src="axon-logo.jpeg" alt="Axon logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="logo-fallback">AXON</div>
+        </div>
+        <div>
+          <div class="eyebrow">Report Writing ROI Calculator</div>
+          <h1>Turn paperwork hours into patrol capacity.</h1>
+          <p class="subtitle">
+            Estimate how much time and money your agency spends writing reports today, then model how AI-assisted reporting can return capacity monthly, annually, and across a 5- or 10-year program.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="panel">
+        <h2>Agency Inputs</h2>
+
+        <div class="field">
+          <label for="agencyName">Agency Name</label>
+          <input id="agencyName" type="text" placeholder="Enter agency name" />
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label for="officersPerShift">Officers Per Shift</label>
+            <input id="officersPerShift" type="number" min="0" step="1" value="0" />
+          </div>
+
+          <div class="field">
+            <label for="shiftsPerDay">Shifts Per Day</label>
+            <input id="shiftsPerDay" type="number" min="0" step="1" value="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reportsPerOfficer">Reports Per Officer Per Shift</label>
+          <input id="reportsPerOfficer" type="number" min="0" step="0.1" value="0" />
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label for="minutesPerReport">Minutes Per Report</label>
+            <input id="minutesPerReport" type="number" min="0" step="1" value="0" />
+          </div>
+
+          <div class="field">
+            <label for="hourlyCost">Hourly Cost Per Officer</label>
+            <input id="hourlyCost" type="number" min="0" step="0.01" value="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="aiSavings">AI Time Savings Percentage</label>
+          <input id="aiSavings" type="number" min="0" max="100" step="1" value="0" />
+          <div class="hint">Example: enter 85 for an 85% reduction in report-writing time.</div>
+        </div>
+
+        <div class="field">
+          <label>Program Term</label>
+          <div class="term-toggle">
+            <button id="term5" class="active" type="button">5 Years</button>
+            <button id="term10" type="button">10 Years</button>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" onclick="calculate()">Calculate</button>
+          <button class="btn btn-secondary" type="button" onclick="resetCalc()">Reset</button>
+        </div>
+
+        <p class="footer-note">
+          All fields start at zero so each agency can model its own staffing, report volume, compensation, and patrol structure.
+        </p>
+      </aside>
+
+      <section class="panel">
+        <h2 id="dashboardTitle">Savings Synopsis</h2>
+
+        <div class="summary-grid">
+          <div class="big-card">
+            <div class="card-label">Monthly Savings</div>
+            <div class="money" id="monthlySavings">$0</div>
+            <div class="hours" id="monthlyHoursSaved">0 hours saved per month</div>
+          </div>
+
+          <div class="big-card">
+            <div class="card-label">Annual Savings</div>
+            <div class="money" id="annualSavings">$0</div>
+            <div class="hours" id="annualHoursSaved">0 hours saved per year</div>
+          </div>
+
+          <div class="big-card">
+            <div class="card-label" id="termLabel">5-Year Savings</div>
+            <div class="money" id="termSavings">$0</div>
+            <div class="hours" id="termHoursSaved">0 hours saved over term</div>
+          </div>
+        </div>
+
+        <div class="synopsis" id="synopsis">
+          Enter agency inputs to calculate report-writing burden, projected savings, and time returned to officers.
+        </div>
+
+        <h3 class="section-title">Current Report-Writing Burden</h3>
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="name">Reports Per Shift</div>
+            <div class="value" id="reportsShift">0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Reports Per Day</div>
+            <div class="value" id="reportsDay">0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Hours Per Shift</div>
+            <div class="value" id="hoursShift">0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Cost Per Shift</div>
+            <div class="value" id="costShift">$0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Monthly Cost</div>
+            <div class="value" id="monthlyCost">$0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Annual Cost</div>
+            <div class="value" id="annualCost">$0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Total Program Cost</div>
+            <div class="value" id="programCost">$0</div>
+          </div>
+          <div class="metric">
+            <div class="name">Total Program Hours</div>
+            <div class="value" id="programHours">0</div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Cool Savings Comparisons</h3>
+        <div class="comparison-grid">
+          <div class="comparison">
+            <div class="emoji">🛡️</div>
+            <div class="value" id="shiftsReturned">0</div>
+            <div class="copy">Equivalent 8-hour officer shifts returned over the selected term.</div>
+          </div>
+
+          <div class="comparison">
+            <div class="emoji">📆</div>
+            <div class="value" id="weeksReturned">0</div>
+            <div class="copy">Equivalent 40-hour work weeks reallocated from paperwork.</div>
+          </div>
+
+          <div class="comparison">
+            <div class="emoji">👮</div>
+            <div class="value" id="monthsReturned">0</div>
+            <div class="copy">Equivalent officer-months of capacity returned to the agency.</div>
+          </div>
+
+          <div class="comparison">
+            <div class="emoji">🚓</div>
+            <div class="value" id="patrolDays">0</div>
+            <div class="copy">Equivalent patrol days unlocked at 8 hours per day.</div>
+          </div>
+
+          <div class="comparison">
+            <div class="emoji">📝</div>
+            <div class="value" id="reportsImpacted">0</div>
+            <div class="copy">Reports touched across the selected program term.</div>
+          </div>
+
+          <div class="comparison">
+            <div class="emoji">⚡</div>
+            <div class="value" id="dailyHoursSaved">0</div>
+            <div class="copy">Hours saved every day that can shift toward patrol, investigations, training, and community engagement.</div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    let selectedTerm = 5;
+
+    const ids = {
+      agencyName: document.getElementById("agencyName"),
+      officersPerShift: document.getElementById("officersPerShift"),
+      shiftsPerDay: document.getElementById("shiftsPerDay"),
+      reportsPerOfficer: document.getElementById("reportsPerOfficer"),
+      minutesPerReport: document.getElementById("minutesPerReport"),
+      hourlyCost: document.getElementById("hourlyCost"),
+      aiSavings: document.getElementById("aiSavings"),
+      term5: document.getElementById("term5"),
+      term10: document.getElementById("term10")
+    };
+
+    const money = (num) => {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(isFinite(num) ? num : 0);
+    };
+
+    const number = (num, digits = 0) => {
+      return new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: digits
+      }).format(isFinite(num) ? num : 0);
+    };
+
+    const getVal = (id) => {
+      const val = parseFloat(document.getElementById(id).value);
+      return isNaN(val) ? 0 : val;
+    };
+
+    function setTerm(term) {
+      selectedTerm = term;
+      ids.term5.classList.toggle("active", term === 5);
+      ids.term10.classList.toggle("active", term === 10);
+      calculate();
+    }
+
+    ids.term5.addEventListener("click", () => setTerm(5));
+    ids.term10.addEventListener("click", () => setTerm(10));
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", calculate);
+    });
+
+    function calculate() {
+      const agency = ids.agencyName.value.trim();
+      const officersPerShift = getVal("officersPerShift");
+      const shiftsPerDay = getVal("shiftsPerDay");
+      const reportsPerOfficer = getVal("reportsPerOfficer");
+      const minutesPerReport = getVal("minutesPerReport");
+      const hourlyCost = getVal("hourlyCost");
+      const aiSavingsPercent = Math.min(Math.max(getVal("aiSavings"), 0), 100) / 100;
+
+      const reportsPerShift = officersPerShift * reportsPerOfficer;
+      const hoursPerShift = reportsPerShift * minutesPerReport / 60;
+      const costPerShift = hoursPerShift * hourlyCost;
+
+      const reportsPerDay = reportsPerShift * shiftsPerDay;
+      const hoursPerDay = hoursPerShift * shiftsPerDay;
+      const costPerDay = costPerShift * shiftsPerDay;
+
+      const monthlyHours = hoursPerDay * 30;
+      const monthlyCost = costPerDay * 30;
+
+      const annualHours = hoursPerDay * 365;
+      const annualCost = costPerDay * 365;
+
+      const programHours = annualHours * selectedTerm;
+      const programCost = annualCost * selectedTerm;
+      const programReports = reportsPerDay * 365 * selectedTerm;
+
+      const dailyHoursSaved = hoursPerDay * aiSavingsPercent;
+      const monthlyHoursSaved = monthlyHours * aiSavingsPercent;
+      const monthlyCostSaved = monthlyCost * aiSavingsPercent;
+
+      const annualHoursSaved = annualHours * aiSavingsPercent;
+      const annualCostSaved = annualCost * aiSavingsPercent;
+
+      const termHoursSaved = programHours * aiSavingsPercent;
+      const termCostSaved = programCost * aiSavingsPercent;
+
+      const equivalentShifts = termHoursSaved / 8;
+      const equivalentWeeks = termHoursSaved / 40;
+      const officerMonths = termHoursSaved / 160;
+      const patrolDays = termHoursSaved / 8;
+
+      document.getElementById("dashboardTitle").textContent =
+        agency ? `${agency} Savings Synopsis` : "Savings Synopsis";
+
+      document.getElementById("monthlySavings").textContent = money(monthlyCostSaved);
+      document.getElementById("monthlyHoursSaved").textContent = `${number(monthlyHoursSaved, 1)} hours saved per month`;
+
+      document.getElementById("annualSavings").textContent = money(annualCostSaved);
+      document.getElementById("annualHoursSaved").textContent = `${number(annualHoursSaved, 1)} hours saved per year`;
+
+      document.getElementById("termLabel").textContent = `${selectedTerm}-Year Savings`;
+      document.getElementById("termSavings").textContent = money(termCostSaved);
+      document.getElementById("termHoursSaved").textContent = `${number(termHoursSaved, 1)} hours saved over ${selectedTerm} years`;
+
+      document.getElementById("reportsShift").textContent = number(reportsPerShift, 1);
+      document.getElementById("reportsDay").textContent = number(reportsPerDay, 1);
+      document.getElementById("hoursShift").textContent = number(hoursPerShift, 1);
+      document.getElementById("costShift").textContent = money(costPerShift);
+
+      document.getElementById("monthlyCost").textContent = money(monthlyCost);
+      document.getElementById("annualCost").textContent = money(annualCost);
+      document.getElementById("programCost").textContent = money(programCost);
+      document.getElementById("programHours").textContent = number(programHours, 1);
+
+      document.getElementById("shiftsReturned").textContent = number(equivalentShifts, 0);
+      document.getElementById("weeksReturned").textContent = number(equivalentWeeks, 1);
+      document.getElementById("monthsReturned").textContent = number(officerMonths, 1);
+      document.getElementById("patrolDays").textContent = number(patrolDays, 0);
+      document.getElementById("reportsImpacted").textContent = number(programReports, 0);
+      document.getElementById("dailyHoursSaved").textContent = number(dailyHoursSaved, 1);
+
+      const savingsPercentDisplay = number(aiSavingsPercent * 100, 0);
+
+      if (
+        officersPerShift === 0 &&
+        shiftsPerDay === 0 &&
+        reportsPerOfficer === 0 &&
+        minutesPerReport === 0 &&
+        hourlyCost === 0 &&
+        aiSavingsPercent === 0
+      ) {
+        document.getElementById("synopsis").innerHTML =
+          "Enter agency inputs to calculate report-writing burden, projected savings, and time returned to officers.";
+      } else {
+        document.getElementById("synopsis").innerHTML =
+          `<strong>${agency || "This agency"}</strong> currently models approximately 
+          <strong>${number(reportsPerDay, 1)} reports per day</strong>, requiring 
+          <strong>${number(hoursPerDay, 1)} report-writing hours per day</strong>. 
+          At a <strong>${savingsPercentDisplay}% AI time savings rate</strong>, this could return 
+          <strong>${number(annualHoursSaved, 1)} hours per year</strong> and 
+          <strong>${money(annualCostSaved)} annually</strong>. Over a 
+          <strong>${selectedTerm}-year term</strong>, that equals 
+          <strong>${number(termHoursSaved, 1)} hours</strong> and 
+          <strong>${money(termCostSaved)}</strong> in modeled savings.`;
+      }
+    }
+
+    function resetCalc() {
+      ids.agencyName.value = "";
+      ids.officersPerShift.value = 0;
+      ids.shiftsPerDay.value = 0;
+      ids.reportsPerOfficer.value = 0;
+      ids.minutesPerReport.value = 0;
+      ids.hourlyCost.value = 0;
+      ids.aiSavings.value = 0;
+      setTerm(5);
+      calculate();
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
+```
